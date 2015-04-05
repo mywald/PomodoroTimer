@@ -27,13 +27,6 @@
 #define LED2 RB5
 #define LED3 RC4
 #define DISPLAY_SLAVE_SELECT RC0
-#define RFMB_IRQ RA2
-#define SWITCH RB7
-
-#define RELAIS_PORT_0 RC3
-#define RELAIS_PORT_1 RC4
-#define RELAIS_PORT_2 RC5
-#define RELAIS_PORT_3 RC6
 
 
 void configureports();

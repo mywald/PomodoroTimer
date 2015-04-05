@@ -9,7 +9,7 @@
 #include "framework.h"
 
 
-void displayChar(uchar _data);
+void displayCharAsDecimal(uchar _data);
 
 #endif	/* SEVENSEGMENT_H */
 

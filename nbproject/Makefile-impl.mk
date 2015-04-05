@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=SPI_Relais_Driver.X
+PROJECTNAME=PomodoroTimer
 
 # Active Configuration
 DEFAULTCONF=OnChip

@@ -3,12 +3,10 @@
 #include "sevensegment.h"
 
 uchar cycles;
-//30,637254901960784
-uchar minute = 919;
-uchar second = 15;
+uchar second = 15; //30,637254901960784/2  == timer interrupts for one second
 
-uchar tomato_time = 2*60;
-uchar pause_time = 1*60;
+uchar tomato_time = 3*60;
+uchar pause_time = 2*60;
 bit tomatomode = 0;
 uchar current_time = 0;
 
@@ -37,7 +35,7 @@ void one_second_passed(){
         switch_mode();
     }
     if (current_time > 60){
-        displayCharAsDecimal((current_time + 60) / 60);
+        displayCharAsDecimal((current_time + 59) / 60);
     } else {
         displayCharAsDecimal(current_time);
     }
@@ -45,12 +43,19 @@ void one_second_passed(){
 
 void interrupt ISR() {
     if (TMR2IF) {
+        TMR2ON = 0; //disable timer
+        
         cycles++;
         if (cycles == second) {
             one_second_passed();
-            cycles = 0;      
+            cycles = 0;   
+            delayms(85); // correct rounding error for second counting
         }
+        
+        //restart timer, reset interrupt
         TMR2IF = 0;
+        TMR2 = 0;
+        TMR2ON = 1;
     }
 }
 
@@ -59,22 +64,22 @@ void main(void) {
     configureports();
  
     //init businessdata
-    tomatomode = 0;
-    current_time = 1;
+    tomatomode = 0; //start with pause
+    current_time = 6; //6 seconds to go
     one_second_passed();
     
     //start timer and interrupts
-    PR2 = 255;
     T2CON = 0b01111011;  //Setup Timer2 with Postscaler=1:16 and Prescaler=16
-
+    PR2 = 255;           //Timer overflow max
     TMR2IF = 0;
     TMR2IE = 1;
     PEIE = 1;
     GIE = 1;
-    TMR2ON = 1; //Timer2 = on
+    TMR2ON = 1;
     
             
     while(1) {
+        displayCharAsDecimal(88);
         NOP();
     }
 

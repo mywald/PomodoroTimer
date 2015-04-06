@@ -6,13 +6,14 @@ uchar characters[16] = { 0b11001111, 0b00001100, 0b10101011, 0b10101110, 0b01101
 
 
 void displayCharAsDecimal(uchar val){
-    uchar hnib = ((val & 0xF0) >> 4);
-    uchar lnib = val & 0x0F;
+    uchar hnib = 0;
+    uchar lnib = 0;
 
-    if (lnib > 9){
-        lnib=lnib-10;
+    while (val > 9){
+        val=val-10;
         hnib++;
     }
+    lnib = val;
     
     DISPLAY_SLAVE_SELECT = 1;
     SSPBUF = characters[lnib];

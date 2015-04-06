@@ -27,7 +27,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=PomodoroTimer
 
 # Active Configuration
-DEFAULTCONF=OnChip
+DEFAULTCONF=Simulator
 CONF=${DEFAULTCONF}
 
 # All Configurations

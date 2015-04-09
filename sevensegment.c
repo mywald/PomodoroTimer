@@ -1,8 +1,25 @@
 #include "sevensegment.h"
 
-uchar characters[16] = { 0b11001111, 0b00001100, 0b10101011, 0b10101110, 0b01101100, 0b11100110,
-                         0b11100111, 0b11001100, 0b11101111, 0b11101110, 0b11101101, 0b01100111,
-                         0b00100011, 0b00101111, 0b11100011, 0b11100001 };
+uchar characters_l[10] = { 0b11111010, 0b00110000, 0b01011110, 0b00111110, 0b10110100, 0b10101110,
+                         0b11101110, 0b00111000, 0b11111110, 0b10111110 };
+
+uchar characters_h[10] = { 0b01111110, 0b01010000, 0b01001111, 0b01011011, 0b01110001,  0b00111011,
+                         0b00111111, 0b01010010, 0b01111111, 0b01111011 };
+
+/*uchar characters_h[10] = { 0b10000000, 0b01000000, 0b00010000, 0b00010000, 0b00001000, 0b00000100,
+                         0b00000010, 0b00000001 };
+
+uchar characters_l[10] = { 0b10000000, 0b01000000, 0b00010000, 0b00010000, 0b00001000, 0b00000100,
+                         0b00000010, 0b00000001 };*/
+
+/*rechtes:
+ol ul  ur  or  o  m  u  .
+
+//linkes:
+.  or ol ur  u  ul  o  m
+*/
+
+
 
 
 void displayCharAsDecimal(uchar val){
@@ -16,9 +33,9 @@ void displayCharAsDecimal(uchar val){
     lnib = val;
     
     DISPLAY_SLAVE_SELECT = 1;
-    SSPBUF = characters[lnib];
+    SSPBUF = characters_l[lnib];
     while (!SSPSTATbits.BF);
-    SSPBUF = characters[hnib];
+    SSPBUF = characters_h[hnib];
     while (!SSPSTATbits.BF);
     DISPLAY_SLAVE_SELECT = 0;
 }

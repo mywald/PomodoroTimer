@@ -24,7 +24,7 @@ void main(void) {
     configureports();
     init_businessdata();
     start_timer_and_interrupts();
-                
+
     while(1) {
         NOP(); //nothing to do since everything happens in interrupts
     }
@@ -47,7 +47,7 @@ void start_timer_and_interrupts(){
 }
 
 void interrupt ISR() {
-    if (TMR2IF) {
+    if (TMR2IF) { 
         TMR2ON = 0; //disable timer
         
         cycles++;
@@ -66,6 +66,11 @@ void interrupt ISR() {
 
 void one_second_passed(){
     current_time--;
+    
+    if (tomatomode) {
+        LED=!LED;
+    }
+    
     if (current_time == 0){
         switch_mode();
     }

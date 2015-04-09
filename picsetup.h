@@ -22,9 +22,8 @@
 
 
 
-#define nSPI_SLAVE_SELECT RC2
 #define LED RC1
-#define LED2 RB5
+#define LED2 RC2
 #define LED3 RC4
 #define DISPLAY_SLAVE_SELECT RC0
 

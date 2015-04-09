@@ -3,15 +3,15 @@
 #include "sevensegment.h"
 
 
-#define TOMATO_TIME 180  //3 Minuten
-#define PAUSE_TIME 120   //2 Minuten
+#define TOMATO_TIME 1500  //25 Minuten
+#define PAUSE_TIME 600   //10 Minuten
 
 #define CYCLES_PER_SECOND 15  //30,637254901960784/2  == timer interrupts for one second
-#define MISSING_MS_PER_SECOND 85  //to correct rounding error
+#define MISSING_MS_PER_SECOND 15  //to correct rounding error
 
-uchar cycles;
+uint cycles;
 bit tomatomode = 0;
-uchar current_time = 0;
+uint current_time = 0;
 
 void switch_mode();
 void one_second_passed();
@@ -31,6 +31,7 @@ void main(void) {
 }
 
 void init_businessdata(){
+    LED2=1;
     tomatomode = 0; //start with pause
     current_time = 6; //6 seconds to go
     one_second_passed();

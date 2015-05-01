@@ -10,7 +10,7 @@
 /* CHIP Setup
 /******************************************************************************/
 #define _XTAL_FREQ 4000000
-#pragma config FOSC = EXTRCCLK  // Oscillator Selection bits (RC oscillator: CLKOUT function on RA4/OSC2/CLKOUT pin, RC on RA5/OSC1/CLKIN)
+#pragma config FOSC = INTRCIO   // Oscillator Selection bits (RC oscillator: CLKOUT function on RA4/OSC2/CLKOUT pin, RC on RA5/OSC1/CLKIN)
 #pragma config WDTE = OFF       // Watchdog Timer Enable bit (WDT enabled)
 #pragma config PWRTE = OFF      // Power-up Timer Enable bit (PWRT disabled)
 #pragma config MCLRE = ON       // MCLR Pin Function Select bit (MCLR pin function is MCLR)

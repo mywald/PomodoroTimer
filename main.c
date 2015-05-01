@@ -1,6 +1,7 @@
-#include "picsetup.h"
 #include "framework.h"
+#include "picsetup.h"
 #include "sevensegment.h"
+#include "nec_ir_driver.h"
 
 
 #define TOMATO_TIME 1500  //25 Minuten
@@ -12,6 +13,7 @@
 uint cycles;
 bit tomatomode = 0;
 uint current_time = 0;
+bit pausing = 0;
 
 void switch_mode();
 void one_second_passed();
@@ -22,11 +24,31 @@ void start_timer_and_interrupts();
 
 void main(void) {
     configureports();
+    ir_setup();
     init_businessdata();
     start_timer_and_interrupts();
 
     while(1) {
-        NOP(); //nothing to do since everything happens in interrupts
+        if (ir_isReady()){
+            uint8 cmd = ir_popLatestCommand();
+            if (cmd == 0b11001000){
+                switch_mode();
+            } else if (cmd == 0b00101000){
+                current_time += 61;
+            } else if (cmd == 0b10101000){
+                if (current_time > 60) {
+                    current_time -= 60;
+                } else {
+                    switch_mode();
+                }
+            } else if (cmd == 0b00011000){
+                //standby
+            } else if (cmd == 0b01001000){
+                pausing = !pausing;
+            } else {
+                displayByteOnLED(cmd);
+            }
+        }
     }
 }
 
@@ -43,7 +65,6 @@ void start_timer_and_interrupts(){
     TMR2IF = 0;
     TMR2IE = 1;
     PEIE = 1;
-    GIE = 1;
     TMR2ON = 1;   
 }
 
@@ -63,22 +84,36 @@ void interrupt ISR() {
         TMR2 = 0;
         TMR2ON = 1;
     }
+
+    ir_interruptHandler();
 }
 
 void one_second_passed(){
-    current_time--;
-    
-    if (tomatomode) {
-        LED=!LED;
-    }
-    
-    if (current_time == 0){
-        switch_mode();
-    }
-    if (current_time > 60){
-        displayCharAsDecimal((current_time + 59) / 60);
+    if (pausing){
+        if (tomatomode) {
+            LED3=!LED3;
+        } else {
+            LED2=!LED2;
+        }
+        LED=0;
     } else {
-        displayCharAsDecimal(current_time);
+        current_time--;
+
+        if (tomatomode) {
+            LED=!LED;
+            LED3=1;
+        } else {
+            LED2=1;
+        }
+
+        if (current_time == 0){
+            switch_mode();
+        }
+        if (current_time > 60){
+            displayCharAsDecimal((current_time + 59) / 60);
+        } else {
+            displayCharAsDecimal(current_time);
+        }
     }
 }
 

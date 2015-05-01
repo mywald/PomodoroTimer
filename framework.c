@@ -30,16 +30,18 @@ void fastBlink(){
 void displayByteOnLED(uchar answer){
     uchar n = 8;
     while (n--){
-        LED = 0;
-        delayms(400);
+        LED2 = 0;
+        LED3 = 0;
+        delayms(500);
+        LED3 = 1;
         if (answer & 0b10000000) {
-            LED = 1;
+            LED2 = 1;
         }
-        delayms(100);
+        delayms(500);
         answer = answer << 1;
     }
     delayms(1000);
-    LED = 0;
+    LED2 = 0;
 }
 
 //Funktion um Daten aus dem EEPROM zu lesen

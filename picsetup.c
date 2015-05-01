@@ -21,7 +21,7 @@ void configureports(){
     SSPSTATbits.BF = 1;
 
     DISPLAY_SLAVE_SELECT = 0;
-    LED = 0;
-    LED2 = 0;
-    LED3 = 0;
+    LED_DOOR = 0;
+    LED_GREEN = 0;
+    LED_RED = 0;
 }

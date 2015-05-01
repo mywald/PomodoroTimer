@@ -22,9 +22,9 @@
 
 
 
-#define LED RC1
-#define LED2 RC2
-#define LED3 RC4
+#define LED_DOOR RC1
+#define LED_GREEN RC2
+#define LED_RED RC4
 #define DISPLAY_SLAVE_SELECT RC0
 
 

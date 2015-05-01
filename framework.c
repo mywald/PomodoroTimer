@@ -14,34 +14,34 @@ void delayms(uint ms){
 
 
 void fastBlink(){
-   LED = 1;
+   LED_DOOR = 1;
    delayms(50);
-   LED = 0;
+   LED_DOOR = 0;
    delayms(50);
-   LED = 1;
+   LED_DOOR = 1;
    delayms(50);
-   LED = 0;
+   LED_DOOR = 0;
    delayms(50);
-   LED = 1;
+   LED_DOOR = 1;
    delayms(50);
-   LED = 0;
+   LED_DOOR = 0;
 }
 
 void displayByteOnLED(uchar answer){
     uchar n = 8;
     while (n--){
-        LED2 = 0;
-        LED3 = 0;
+        LED_GREEN = 0;
+        LED_RED = 0;
         delayms(500);
-        LED3 = 1;
+        LED_RED = 1;
         if (answer & 0b10000000) {
-            LED2 = 1;
+            LED_GREEN = 1;
         }
         delayms(500);
         answer = answer << 1;
     }
     delayms(1000);
-    LED2 = 0;
+    LED_GREEN = 0;
 }
 
 //Funktion um Daten aus dem EEPROM zu lesen

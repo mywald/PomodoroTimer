@@ -3,9 +3,10 @@
 #include "sevensegment.h"
 #include "nec_ir_driver.h"
 
-
-#define TOMATO_TIME 1500  //25 Minuten
-#define PAUSE_TIME 600   //10 Minuten
+#define ADDRESS_TOMATOTIME 0x00
+#define ADDRESS_PAUSETIME 0x01
+#define DEFAULT_TOMATO_TIME_MINUTES 25
+#define DEFAULT_PAUSE_TIME_MINUTES 10
 
 #define CYCLES_PER_SECOND 15  //30,637254901960784/2  == timer interrupts for one second
 #define MISSING_MS_PER_SECOND 15  //to correct rounding error
@@ -14,13 +15,17 @@
 #define BUTTON_VOL_UP 0b00101000
 #define BUTTON_VOL_DOWN 0b10101000
 #define BUTTON_MUTE 0b01001000
-#define BUTTON_POWER 0b00011000
+#define BUTTON_POWER 0b00110000
+#define BUTTON_APS 0b10010000
 
 
 uint cycles;
 bit tomatomode = 0;
 uint current_time = 0;
 bit pausing = 0;
+bit setup = 0;
+bit sleep = 0;
+uint time_before_setup = 0;
 
 void switch_mode();
 void one_second_passed();
@@ -43,8 +48,16 @@ void main(void) {
     }
 }
 
-void init_businessdata(){
-    LED_GREEN=1;
+void init_businessdata() {
+    uchar storedtime = EEread(ADDRESS_TOMATOTIME);
+    if (storedtime == 0x00 || storedtime == 0xFF){
+        EEwrite(ADDRESS_TOMATOTIME, DEFAULT_TOMATO_TIME_MINUTES);
+    }
+    storedtime = EEread(ADDRESS_PAUSETIME);
+    if (storedtime == 0x00 || storedtime == 0xFF){
+        EEwrite(ADDRESS_PAUSETIME, DEFAULT_PAUSE_TIME_MINUTES);
+    }
+    
     tomatomode = 0; //start with pause
     current_time = 6; //6 seconds to go
     one_second_passed();
@@ -60,6 +73,9 @@ void start_timer_and_interrupts(){
 }
 
 void interrupt ISR() {
+    if (T0IF && sleep) {
+        SLEEP();
+    }
     if (TMR2IF) { 
         TMR2ON = 0; //disable timer
         
@@ -93,9 +109,8 @@ void one_second_passed(){
         if (current_time == 0){
             switch_mode();
         }
+        refresh_view();
     }
-    
-    refresh_view();
 }
 
 
@@ -103,9 +118,9 @@ void switch_mode(){
     tomatomode = !tomatomode;
     
     if (tomatomode) {
-        current_time = TOMATO_TIME;
+        current_time = EEread(ADDRESS_TOMATOTIME)*60;
     } else {
-        current_time = PAUSE_TIME;
+        current_time = EEread(ADDRESS_PAUSETIME)*60;
     }
     
     refresh_view();
@@ -132,25 +147,61 @@ void refresh_view(){
 void handle_remote_button(){
     uint8 cmd = ir_popLatestCommand();
     
-    if (cmd == BUTTON_MENU){
+    if (cmd == BUTTON_POWER){
+        if (!sleep) {
+            sleep = 1;
+            TMR2ON = 0;
+            LED_DOOR = 0;
+            LED_RED = 0;
+            LED_GREEN = 0;
+            displaySingleDot();
+            SLEEP();
+        } else {
+            init_businessdata();
+            TMR2ON = 1;
+            sleep = 0;
+        }
+    } else if (sleep) {
+        SLEEP();
+    } else if (cmd == BUTTON_MENU){
         switch_mode();
     } else if (cmd == BUTTON_VOL_UP){
-        current_time += 61;
         current_time += 60 - (current_time % 60);
     } else if (cmd == BUTTON_VOL_DOWN){
         if (current_time > 60) {
-            current_time -= 60;
-            current_time += 60 - (current_time % 60);
+            current_time -= 60 - (current_time % 60);
         } else {
             switch_mode();
         }
-    } else if (cmd == BUTTON_POWER){
-        //standby
     } else if (cmd == BUTTON_MUTE){
         pausing = !pausing;
-    } else {
+    } else if (cmd == BUTTON_APS){
+        if (!setup) {
+            time_before_setup = current_time;
+            if (tomatomode) {
+                current_time = EEread(ADDRESS_TOMATOTIME)*60;
+            } else {
+                current_time = EEread(ADDRESS_PAUSETIME)*60;
+            }
+            setup = 1;
+            pausing = 1;
+        } else {
+            if (tomatomode) {
+                EEwrite(ADDRESS_TOMATOTIME, current_time/60);
+            } else {
+                EEwrite(ADDRESS_PAUSETIME, current_time/60);
+            }
+            current_time = time_before_setup;
+            pausing = 0;
+            setup = 0;
+        }
+    } /*else {
+        GIE=0;
         displayByteOnLED(cmd);
-    }
+        GIE=1;
+    }*/
 
-    refresh_view();
+    if (!sleep){
+      refresh_view();
+    }
 }

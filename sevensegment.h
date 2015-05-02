@@ -10,6 +10,7 @@
 
 
 void displayCharAsDecimal(uchar _data);
+void displaySingleDot();
 
 #endif	/* SEVENSEGMENT_H */
 

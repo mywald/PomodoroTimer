@@ -31,3 +31,11 @@ void displayCharAsDecimal(uchar val){
     DISPLAY_SLAVE_SELECT = 0;
 }
 
+void displaySingleDot(){
+    DISPLAY_SLAVE_SELECT = 1;
+    SSPBUF = 0b000000001;
+    while (!SSPSTATbits.BF);
+    SSPBUF = 0b000000000;
+    while (!SSPSTATbits.BF);
+    DISPLAY_SLAVE_SELECT = 0;
+}

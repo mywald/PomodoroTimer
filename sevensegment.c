@@ -3,7 +3,7 @@
 uchar characters_l[10] = { 0b11111010, 0b00110000, 0b01011110, 0b00111110, 0b10110100, 0b10101110,
                          0b11101110, 0b00111000, 0b11111110, 0b10111110 };
 
-uchar characters_h[10] = { 0b01111110, 0b01010000, 0b01001111, 0b01011011, 0b01110001,  0b00111011,
+uchar characters_h[10] = { 0b00000000, 0b01010000, 0b01001111, 0b01011011, 0b01110001,  0b00111011,
                          0b00111111, 0b01010010, 0b01111111, 0b01111011 };
 
 uchar currently_displayed = 0xFF;
@@ -31,9 +31,9 @@ void displayCharAsDecimal(uchar val){
     DISPLAY_SLAVE_SELECT = 0;
 }
 
-void displaySingleDot(){
+void clearDisplay(){
     DISPLAY_SLAVE_SELECT = 1;
-    SSPBUF = 0b000000001;
+    SSPBUF = 0b000000000;
     while (!SSPSTATbits.BF);
     SSPBUF = 0b000000000;
     while (!SSPSTATbits.BF);

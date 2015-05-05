@@ -154,7 +154,7 @@ void handle_remote_button(){
             LED_DOOR = 0;
             LED_RED = 0;
             LED_GREEN = 0;
-            displaySingleDot();
+            clearDisplay();
             SLEEP();
         } else {
             init_businessdata();
@@ -166,10 +166,18 @@ void handle_remote_button(){
     } else if (cmd == BUTTON_MENU){
         switch_mode();
     } else if (cmd == BUTTON_VOL_UP){
-        current_time += 60 - (current_time % 60);
+        if (current_time % 60 > 0) {
+            current_time += 120 - (current_time % 60);
+        } else {
+            current_time += 60;
+        }
     } else if (cmd == BUTTON_VOL_DOWN){
         if (current_time > 60) {
-            current_time -= 60 - (current_time % 60);
+            if (current_time % 60 > 0) {
+                current_time -= current_time % 60;
+            } else {
+                current_time -= 60;
+            }
         } else {
             switch_mode();
         }
